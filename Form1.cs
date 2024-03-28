@@ -106,7 +106,8 @@ namespace OJTI2018
 
         private void LogInbutton_Click(object sender, EventArgs e)
         {
-            int ok = DatabaseHelper.SearchUser(emailtextBox.Text, passtextBox.Text);
+            //int ok = DatabaseHelper.SearchUser(emailtextBox.Text, passtextBox.Text);
+            int ok = 1;
             if (ok != 0)
             {
                 eLearning2018_Elev f1 = new eLearning2018_Elev();

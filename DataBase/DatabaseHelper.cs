@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
@@ -8,6 +10,8 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using System.Windows.Forms;
 
 namespace OJTI2018.DataBase
 {
@@ -60,16 +64,17 @@ namespace OJTI2018.DataBase
                         using(SqlCommand insertUtilizatori = new SqlCommand(cmdInsertUtilizatori, con))
                         {
                             string line= reader.ReadLine();
-                            while (line != "Itemi:")
-                            {
+                            if(line == "Itemi:") { break; }
+                            
                                 string[] split = line.Split(';');
                                 insertUtilizatori.Parameters.AddWithValue("@nume", split[0]);
                                 insertUtilizatori.Parameters.AddWithValue("@parola", split[1]);
                                 insertUtilizatori.Parameters.AddWithValue("@email", split[2]);
                                 insertUtilizatori.Parameters.AddWithValue("@clasa", split[3]);
                                 insertUtilizatori.ExecuteNonQuery();
-                                line = reader.ReadLine();
-                            }
+                              
+                                
+                            
                         }
                     }
                     
@@ -78,8 +83,8 @@ namespace OJTI2018.DataBase
                         using (SqlCommand insertItemi= new SqlCommand(cmdInsertItemi, con))
                         {
                             string line = reader.ReadLine();
-                            while (line != "Evaluari:")
-                            {
+                            if (line == "Evaluari:") { break; }
+                            
                                 string[] split = line.Split(';');
                                 insertItemi.Parameters.AddWithValue("@tip", Convert.ToInt32(split[0]));
                                 insertItemi.Parameters.AddWithValue("@enunt", split[1]);
@@ -89,8 +94,8 @@ namespace OJTI2018.DataBase
                                 insertItemi.Parameters.AddWithValue("@r4", split[5]);
                                 insertItemi.Parameters.AddWithValue("@rc", split[6]);
                                 insertItemi.ExecuteNonQuery();
-                                line = reader.ReadLine();
-                            }
+                                
+                            
                         }
                     }
                    
@@ -128,6 +133,38 @@ namespace OJTI2018.DataBase
                 }
             }
             return ok;
+        }
+
+        public static DataTable RandomItems()
+        {
+            DataTable items = new DataTable();
+            items.Columns.Add("Tip");
+            items.Columns.Add("Enunt");
+            items.Columns.Add("R1");
+            items.Columns.Add("R2");
+            items.Columns.Add("R3");
+            items.Columns.Add("R4");
+            items.Columns.Add("RC");
+            using (SqlConnection con = new SqlConnection(connectionstring))
+            {
+                con.Open();
+                string cmdText = @"SELECT TOP 9 *
+                FROM(
+                  SELECT *, ROW_NUMBER() OVER(PARTITION BY TipItem  ORDER BY NEWID()) AS RowNum
+                  FROM Itemi
+                ) AS SubQuery
+                WHERE RowNum = 1";
+                using (SqlCommand cmd = new SqlCommand(cmdText, con))
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        items.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString());
+                    }
+                }
+            }
+
+            return items;
         }
     }
 }
