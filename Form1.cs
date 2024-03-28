@@ -30,8 +30,12 @@ namespace OJTI2018
         {
             List<Bitmap> img = new List<Bitmap>();
             string imgFolderPath = "Imagini";
-            string[] fileNamesFromFolder= Directory.GetFiles(imgFolderPath);
-            foreach(string fileName in fileNamesFromFolder) 
+           
+            string workingDirectory = Environment.CurrentDirectory;
+            string projectBinDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+            var result = Path.Combine(projectBinDirectory, imgFolderPath); 
+            string[] fileNamesFromFolder= Directory.GetFiles(result);
+            foreach (string fileName in fileNamesFromFolder) 
             {
                 Bitmap bitmap = new Bitmap(fileName);
                 img.Add(bitmap);
