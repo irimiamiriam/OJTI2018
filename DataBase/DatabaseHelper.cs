@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace OJTI2018.DataBase
 {
@@ -124,7 +125,7 @@ namespace OJTI2018.DataBase
             using(SqlConnection con = new SqlConnection(connectionstring))
             {
                 con.Open();
-                string cmdSelect = "Select count(*) from Utilizatori where EmailUtilizator = @email and ParolaUtilizator= @parola";
+                string cmdSelect = "Select count(*) from Utilizatori where CAST(EmailUtilizator AS NVARCHAR(MAX)) = @email AND CAST(ParolaUtilizator AS NVARCHAR(MAX)) = @parola";
                 using(SqlCommand cmd = new SqlCommand(cmdSelect, con))
                 {
                     cmd.Parameters.AddWithValue("@email", email);
@@ -148,23 +149,100 @@ namespace OJTI2018.DataBase
             using (SqlConnection con = new SqlConnection(connectionstring))
             {
                 con.Open();
-                string cmdText = @"SELECT TOP 9 *
-                FROM(
-                  SELECT *, ROW_NUMBER() OVER(PARTITION BY TipItem  ORDER BY NEWID()) AS RowNum
-                  FROM Itemi
-                ) AS SubQuery
-                WHERE RowNum = 1";
+                string cmdText = @"Select * from Itemi";
                 using (SqlCommand cmd = new SqlCommand(cmdText, con))
                 {
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        items.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString());
+                      items.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString()); 
                     }
                 }
+               
             }
 
             return items;
         }
+
+        public static void InsertIntoEvaluari(int idElev, int punctaj)
+        {
+            using(SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                string cmdText = "Insert into Evaluari (IdElev, DataEvaluare, NotaEvaluare) values (@idelev, @data, @nota)";
+                using(SqlCommand cmd = new SqlCommand(cmdText, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idelev", Convert.ToInt32(idElev));
+                    cmd.Parameters.AddWithValue("@data", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@nota", Convert.ToInt32(punctaj));
+                    cmd.ExecuteNonQuery();
+                }
+                
+            }
+        }
+        public static string GetNumePrenume(int idElev)
+        {
+            string nume = "";
+            using(SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                string cmdText = "Select NumePrenumeUtilizator from Utilizatori where IdUtilizator=@id";
+                using(SqlCommand cmd = new SqlCommand(cmdText, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", idElev);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read()) { nume = reader[0].ToString(); }
+
+                }
+
+            }
+            return nume;
+
+        }
+        public static DataTable NoteElev(int idElev)
+        { 
+            DataTable noteElev = new DataTable();
+            noteElev.Columns.Add("Nota");
+            noteElev.Columns.Add("Data");
+            using(SqlConnection conn = new SqlConnection(connectionstring)) 
+            {
+                conn.Open();
+                string cmdText = "Select NotaEvaluare, DataEvaluare from Evaluari where IdElev = @id";
+                using(SqlCommand cmd = new SqlCommand(cmdText, conn)) 
+                {
+                    cmd.Parameters.AddWithValue("@id", idElev);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read()) 
+                    {
+                        noteElev.Rows.Add(reader[0].ToString(), reader[1].ToString());
+                    }
+                }
+            }
+            
+            return noteElev;
+        }
+
+        public static double GetMedie()
+        {
+            int suma = 0;
+            int nrnote = 0;
+            using(SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                string cmdText = "Select NotaEvaluare from Evaluari";
+                using(SqlCommand cmd = new SqlCommand(cmdText, conn))
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        suma += Convert.ToInt32(reader[0]);
+                        nrnote++;
+                    }
+                }
+            }
+            return suma/nrnote;
+        }
+
+       
     }
 }
