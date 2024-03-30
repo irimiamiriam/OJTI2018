@@ -146,6 +146,10 @@ namespace OJTI2018.DataBase
             items.Columns.Add("R3");
             items.Columns.Add("R4");
             items.Columns.Add("RC");
+            DataTable type1 = items.Clone();
+            DataTable type2 = items.Clone();
+            DataTable type3 = items.Clone();
+            DataTable type4 = items.Clone();
             using (SqlConnection con = new SqlConnection(connectionstring))
             {
                 con.Open();
@@ -155,12 +159,24 @@ namespace OJTI2018.DataBase
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                      items.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString()); 
+
+                        if (reader[1].ToString() == "1") { type1.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString()); }
+                        if (reader[1].ToString() == "2") { type2.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString()); }
+                        if (reader[1].ToString() == "3") { type3.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString()); }
+                        if (reader[1].ToString() == "4") { type4.Rows.Add(reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString()); }
                     }
+
                 }
+                for (int i=0; i<=1; i++) 
+                {
+                    items.Rows.Add(type1.Rows[i].ItemArray);
+                    items.Rows.Add(type2.Rows[i].ItemArray);
+                    items.Rows.Add(type3.Rows[i].ItemArray);
+                    items.Rows.Add(type4.Rows[i].ItemArray);
+                }
+                items.Rows.Add(type1.Rows[2].ItemArray);
                
             }
-
             return items;
         }
 

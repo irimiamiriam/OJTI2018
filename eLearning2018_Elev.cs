@@ -76,7 +76,7 @@ namespace OJTI2018
         private void startButton_Click(object sender, EventArgs e)
         {
             indItem = 0;
-            punctaj = 0;
+            punctaj = 1;
             raspundeButton.Enabled = true;
             nextButton.Enabled = true;
             randomItems = DatabaseHelper.RandomItems();
@@ -114,8 +114,9 @@ namespace OJTI2018
                     enunt1.Text = "Rapsuns:";
                     TextBox raspuns = new TextBox();
                     enunt1.Location = new Point(10 , 10);
-                    raspuns.Location= new Point(40 , 10);
-                   
+                    raspuns.Location = new Point(enunt1.Right + 5, 10);
+                    raspuns.Size = new Size(300, 30);
+
                     panel1.Controls.Add(enunt1);
                     panel1.Controls.Add(raspuns);
                    
@@ -171,8 +172,12 @@ namespace OJTI2018
                     radioFals.Location = new Point(10, 30);
                     panel1.Controls.Add(radioAdevarat);
                     panel1.Controls.Add(radioFals);
-
                 }
+                if (indItem == 8)
+                {
+                    nextButton.Enabled = false;
+                }
+
               
             }
         }
@@ -277,13 +282,12 @@ namespace OJTI2018
                 }
                
             }
-            if (indItem == 3)
+            if (indItem == 8)
             {
                 DatabaseHelper.InsertIntoEvaluari(idElev, punctaj);
                 DatabaseHelper.NoteElev(idElev);
                 dataGridViewNote.DataSource = DatabaseHelper.NoteElev(idElev);
                 raspundeButton.Enabled = false;
-                nextButton.Enabled = false;
                 double medie = DatabaseHelper.GetMedie();
                 chart1.Series["Note elev"].Points.AddXY(++currentPoint, punctaj);
                 chart1.Series["Media elevilor din clasa"].Points.AddXY(++currentPointMedie, medie);

@@ -110,11 +110,11 @@ namespace OJTI2018
 
         private void LogInbutton_Click(object sender, EventArgs e)
         {
-            int ok = DatabaseHelper.SearchUser(emailtextBox.Text, passtextBox.Text);
+            int idElevInregistrat = DatabaseHelper.SearchUser(emailtextBox.Text, passtextBox.Text);
        
-            if (ok != 0)
+            if (idElevInregistrat != 0)
             {
-                eLearning2018_Elev f1 = new eLearning2018_Elev(ok);
+                eLearning2018_Elev f1 = new eLearning2018_Elev(idElevInregistrat);
                 this.Hide();
                 f1.ShowDialog();
                 this.Show();
