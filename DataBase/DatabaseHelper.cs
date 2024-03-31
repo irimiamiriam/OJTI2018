@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace OJTI2018.DataBase
 {
@@ -257,6 +258,26 @@ namespace OJTI2018.DataBase
                 }
             }
             return suma/nrnote;
+        }
+
+        public static ElevModel GetElevModel(int Id)
+        {
+            
+            string name = string.Empty;
+            using (SqlConnection con = new SqlConnection(connectionstring))
+            {
+                con.Open();
+                string cmdSelect = "Select NumePrenumeUtilizator from Utilizatori where IdUtilizator=@id";
+                using (SqlCommand cmd = new SqlCommand(cmdSelect, con))
+                {
+                    cmd.Parameters.AddWithValue("@id", Id);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read()) { name = reader[0].ToString(); }
+                }
+            }
+            ElevModel elevModel = new ElevModel(Id, name);
+            return elevModel;
+
         }
 
        

@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBase\DatabaseHelper.cs" />
+    <Compile Include="DataBase\ElevModel.cs" />
     <Compile Include="DataBase\SqlAccess.cs" />
     <Compile Include="eLearning2018_Elev.cs">
       <SubType>Form</SubType>

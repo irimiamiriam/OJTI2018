@@ -14,11 +14,14 @@ namespace OJTI2018
 {
     public partial class eLearning2018_start : Form
     {
-     
-      List<Bitmap> images = new List<Bitmap>();
+        public static eLearning2018_start instance;
+        public ElevModel elevmodel;
+
+        List<Bitmap> images = new List<Bitmap>();
         public eLearning2018_start()
         {
             InitializeComponent();
+            instance=this;
             images = GetAllImages();
 
             progressBar1.Value = 0;
@@ -111,10 +114,11 @@ namespace OJTI2018
         private void LogInbutton_Click(object sender, EventArgs e)
         {
             int idElevInregistrat = DatabaseHelper.SearchUser(emailtextBox.Text, passtextBox.Text);
-       
+            elevmodel = DatabaseHelper.GetElevModel(idElevInregistrat);
+
             if (idElevInregistrat != 0)
             {
-                eLearning2018_Elev f1 = new eLearning2018_Elev(idElevInregistrat);
+                eLearning2018_Elev f1 = new eLearning2018_Elev();
                 this.Hide();
                 f1.ShowDialog();
                 this.Show();

@@ -23,15 +23,15 @@ namespace OJTI2018
         int idElev;
         int currentPoint = 0;
         int currentPointMedie = 0;
+        ElevModel model;
 
-        public eLearning2018_Elev(int id)
+        public eLearning2018_Elev()
         {
             InitializeComponent();
-            idElev = id;
-            string nume = DatabaseHelper.GetNumePrenume(idElev);
+            model = eLearning2018_start.instance.elevmodel;
+            idElev = model.Id;
             dataGridViewNote.DataSource = DatabaseHelper.NoteElev(idElev);
-            
-            numeElevLabel.Text = "Carnetul de note al elevului: " + nume;
+            numeElevLabel.Text = "Carnetul de note al elevului: " + model.Name;
            
             ChartGenerating();
             
