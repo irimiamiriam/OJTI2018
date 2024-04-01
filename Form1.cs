@@ -119,6 +119,7 @@ namespace OJTI2018
             if (idElevInregistrat != 0)
             {
                 eLearning2018_Elev f1 = new eLearning2018_Elev();
+                f1.model = elevmodel;
                 this.Hide();
                 f1.ShowDialog();
                 this.Show();

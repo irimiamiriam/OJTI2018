@@ -239,21 +239,45 @@ namespace OJTI2018.DataBase
             return noteElev;
         }
 
-        public static double GetMedie()
+        public static double GetMedie(string clasa)
         {
             int suma = 0;
             int nrnote = 0;
+            List<int> ids = new List<int>();
             using(SqlConnection conn = new SqlConnection(connectionstring))
             {
                 conn.Open();
-                string cmdText = "Select NotaEvaluare from Evaluari";
-                using(SqlCommand cmd = new SqlCommand(cmdText, conn))
+                string cmdGetId = "Select IdUtilizator from Utilizatori where cast(ClasaUtilizator AS NVARCHAR(MAX)) = @clasa";
+                using(SqlCommand cmdId = new SqlCommand(cmdGetId, conn))
                 {
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    cmdId.Parameters.AddWithValue("@clasa", clasa);
+                    using (SqlDataReader reader = cmdId.ExecuteReader())
                     {
-                        suma += Convert.ToInt32(reader[0]);
-                        nrnote++;
+                        while (reader.Read())
+                        {
+                            ids.Add(Convert.ToInt16(reader[0]));
+                        }
+                    }
+                }
+              
+                string cmdGetNotaText = "Select NotaEvaluare from Evaluari where IdElev=@id";
+
+                foreach (int id in ids)
+                {
+                    using (SqlCommand cmdNota = new SqlCommand(cmdGetNotaText, conn))
+                    {
+                        SqlParameter idParameter = new SqlParameter("@id", SqlDbType.Int);
+                        idParameter.Value = id;
+                        cmdNota.Parameters.Add(idParameter);
+
+                        using (SqlDataReader reader = cmdNota.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                suma += Convert.ToInt32(reader[0]);
+                                nrnote++;
+                            }
+                        }
                     }
                 }
             }
@@ -262,20 +286,27 @@ namespace OJTI2018.DataBase
 
         public static ElevModel GetElevModel(int Id)
         {
-            
+
             string name = string.Empty;
+            string clasa = string.Empty;
             using (SqlConnection con = new SqlConnection(connectionstring))
             {
                 con.Open();
-                string cmdSelect = "Select NumePrenumeUtilizator from Utilizatori where IdUtilizator=@id";
+                string cmdSelect = "Select NumePrenumeUtilizator,ClasaUtilizator from Utilizatori where IdUtilizator=@id";
                 using (SqlCommand cmd = new SqlCommand(cmdSelect, con))
                 {
                     cmd.Parameters.AddWithValue("@id", Id);
                     SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read()) { name = reader[0].ToString(); }
+                    while (reader.Read()) { name = reader[0].ToString(); clasa = reader[1].ToString(); }
                 }
             }
-            ElevModel elevModel = new ElevModel(Id, name);
+            ElevModel elevModel = new ElevModel()
+            {
+                Id = Id,
+                Name = name,
+                Clasa = clasa
+            };
+
             return elevModel;
 
         }

@@ -11,10 +11,6 @@ namespace OJTI2018.DataBase
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ElevModel(int id , string name) 
-        { 
-            Id= id;
-            Name= name;
-        }
+        public string Clasa {  get; set; }
     }
 }

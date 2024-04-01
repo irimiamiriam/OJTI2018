@@ -20,24 +20,23 @@ namespace OJTI2018
         DataTable randomItems = new DataTable();
         int indItem = 0;
         int punctaj = 1;
-        int idElev;
         int currentPoint = 0;
         int currentPointMedie = 0;
-        ElevModel model;
+        public ElevModel model;
 
         public eLearning2018_Elev()
         {
             InitializeComponent();
-            model = eLearning2018_start.instance.elevmodel;
-            idElev = model.Id;
-            dataGridViewNote.DataSource = DatabaseHelper.NoteElev(idElev);
-            numeElevLabel.Text = "Carnetul de note al elevului: " + model.Name;
            
-            ChartGenerating();
             
 
         }
+        private void eLearning2018_Elev_Load(object sender, EventArgs e)
+        { dataGridViewNote.DataSource = DatabaseHelper.NoteElev(model.Id);
+            numeElevLabel.Text = "Carnetul de note al elevului: " + model.Name;
+            ChartGenerating();
 
+        }
         private void ChartGenerating()
         {
          
@@ -49,7 +48,7 @@ namespace OJTI2018
             Series seriesMedie = new Series("Media elevilor din clasa");
             seriesMedie.ChartType = SeriesChartType.Line;
             seriesNote.ChartType = SeriesChartType.Line;
-            double medie = DatabaseHelper.GetMedie();
+            double medie = DatabaseHelper.GetMedie(model.Clasa);
             
             foreach (DataGridViewRow row in dataGridViewNote.Rows)
             {
@@ -182,20 +181,7 @@ namespace OJTI2018
             }
         }
 
-        private void testeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            tabControl1.SelectedIndex = 0;
-        }
-
-        private void carnetDeNoteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            tabControl1.SelectedIndex = 1;
-        }
-
-        private void graficNoteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            tabControl1.SelectedIndex = 2;
-        }
+       
 
         private void raspundeButton_Click(object sender, EventArgs e)
         {
@@ -284,11 +270,11 @@ namespace OJTI2018
             }
             if (indItem == 8)
             {
-                DatabaseHelper.InsertIntoEvaluari(idElev, punctaj);
-                DatabaseHelper.NoteElev(idElev);
-                dataGridViewNote.DataSource = DatabaseHelper.NoteElev(idElev);
+                DatabaseHelper.InsertIntoEvaluari(model.Id, punctaj);
+                DatabaseHelper.NoteElev(model.Id);
+                dataGridViewNote.DataSource = DatabaseHelper.NoteElev(model.Id);
                 raspundeButton.Enabled = false;
-                double medie = DatabaseHelper.GetMedie();
+                double medie = DatabaseHelper.GetMedie(model.Clasa);
                 chart1.Series["Note elev"].Points.AddXY(++currentPoint, punctaj);
                 chart1.Series["Media elevilor din clasa"].Points.AddXY(++currentPointMedie, medie);
             }
@@ -297,7 +283,7 @@ namespace OJTI2018
 
         private void printButton_Click(object sender, EventArgs e)
         {
-           PrintDocument printDocument = new PrintDocument();
+            PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += new PrintPageEventHandler(printDocument1_PrintPage);
             printPreviewDialog1.Document= printDocument;
             printPreviewDialog1.ShowDialog();
@@ -309,6 +295,22 @@ namespace OJTI2018
             dataGridViewNote.DrawToBitmap(document, new Rectangle(0, 0 ,document.Width, document.Height));
             e.Graphics.DrawImage(document, 0,0);
 
+        } 
+        private void testeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 0;
         }
+
+        private void carnetDeNoteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 1;
+        }
+
+        private void graficNoteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 2;
+        }
+
+       
     }
 }
